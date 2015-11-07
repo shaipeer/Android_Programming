@@ -10,15 +10,15 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
+    //App time format
+    private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("mm:ss:SS");
+
     //Shared Preferences constants
     private final String PREFS_NAME          = "app_memory";
     private final String LEFT_PREFS_KEY      = "left_time";
     private final String RIGHT_PREFS_KEY     = "right_time";
     private final String TIME_GAP_PREFS_KEY  = "time_gap";
     private final String BEST_TIME_PREFS_KEY = "best_time";
-
-    //App time format
-    SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("mm:ss:SS");
 
     //buttons
     private Button  _left_cmd;
@@ -95,20 +95,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void timeGapPressed()
     {
-        if(isKeyOnePressed)
-            resetPress();
-
-        setRandomKeys();
-
-        _time_gap_cmd.setText(getResources().getString(R.string.time_gap_button));
+        
     }
 
     private void bestTimePressed()
     {
         if(isKeyOnePressed)
             resetPress();
-        _best_time_cmd.setText(getResources().getString(R.string.best_time_button));
-        _time_gap_cmd.setText(getResources().getString(R.string.time_gap_button));
+
+        setRandomKeys();
+
+        _best_time_cmd.setText(getResources().getString(R.string.zero_time));
+        _time_gap_cmd.setText(getResources().getString(R.string.zero_time));
 
         saveAll();
     }
@@ -188,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //Check if the new time is faster then best time
     private Boolean isFaster()
     {
-        String zeroString    = getResources().getString(R.string.time_gap_button);
+        String zeroString    = getResources().getString(R.string.zero_time);
         String bestTimeValue = _best_time_cmd.getText().toString();
         String timeGapValue  = _time_gap_cmd.getText().toString();
 
@@ -255,9 +253,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //================================================================
     private void loadAll()
     {
-        _left_cmd.setText(prefs.getString(LEFT_PREFS_KEY,           getResources().getString(R.string.left_button)      ));     //load left key
-        _right_cmd.setText(prefs.getString(RIGHT_PREFS_KEY,         getResources().getString(R.string.right_button)     ));     //load right key
-        _time_gap_cmd.setText(prefs.getString(TIME_GAP_PREFS_KEY,   getResources().getString(R.string.time_gap_button)  ));     //load time gap key
-        _best_time_cmd.setText(prefs.getString(BEST_TIME_PREFS_KEY, getResources().getString(R.string.best_time_button) ));     //load best time key
+        _left_cmd.setText(prefs.getString(LEFT_PREFS_KEY,           getResources().getString(R.string.left_button)  ));     //load left key
+        _right_cmd.setText(prefs.getString(RIGHT_PREFS_KEY,         getResources().getString(R.string.right_button) ));     //load right key
+        _time_gap_cmd.setText(prefs.getString(TIME_GAP_PREFS_KEY,   getResources().getString(R.string.zero_time)    ));     //load time gap key
+        _best_time_cmd.setText(prefs.getString(BEST_TIME_PREFS_KEY, getResources().getString(R.string.zero_time)    ));     //load best time key
     }
 }
