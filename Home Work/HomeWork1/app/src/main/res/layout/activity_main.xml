@@ -1,0 +1,62 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/left_cmd"
+            android:layout_margin="10sp"
+            android:layout_weight="1"
+            android:textSize="20sp"
+            android:padding="20sp"
+            android:textAlignment="center"
+            android:textStyle="normal" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/right_cmd"
+            android:layout_margin="10sp"
+            android:layout_weight="1"
+            android:textSize="20sp"
+            android:padding="20sp"
+            android:textAlignment="center"
+            android:textStyle="normal" />
+
+    </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/time_gap_cmd"
+        android:layout_margin="10sp"
+        android:textSize="20sp"
+        android:padding="20sp"
+        android:textAlignment="center"
+        android:layout_gravity="center"
+        android:textStyle="normal" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/best_time_cmd"
+        android:layout_margin="10sp"
+        android:textSize="20sp"
+        android:padding="20sp"
+        android:textAlignment="center"
+        android:layout_gravity="center"
+        android:textStyle="normal" />
+
+</LinearLayout>
