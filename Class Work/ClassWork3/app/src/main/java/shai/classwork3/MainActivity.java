@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     //Text View
     private TextView _my_location_textView;
-    private TextView _location_status_textView;
+    private TextView _sinema_city_distance_textView;
 
 
     //================================================================
@@ -38,8 +38,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         _locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         //Text View definition
-        _my_location_textView = (TextView) findViewById(R.id.my_location_textView);
-        _location_status_textView = (TextView) findViewById(R.id.location_status_textView);
+        _my_location_textView          = (TextView) findViewById(R.id.my_location_textView);
+        _sinema_city_distance_textView = (TextView) findViewById(R.id.sinema_city_distance_textView);
 
         //Set Permission Manager (for android Marshmallow)
         _permissionManager = getPermissionManager();
@@ -49,28 +49,55 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     //================================================================
     //                      Print Location
     //================================================================
-    private void printLocation(Location location) {
+    private void printLocation(Location location)
+    {
         String myLocation = "";
 
-        myLocation += "Lat:  " + location.getLatitude() + "\n";
-        myLocation += "Long: " + location.getLongitude();
+        if (location != null)
+            location = getLastKnownLocation();
+
+
+        if (location != null)
+        {
+            myLocation += "Lat:  " + location.getLatitude() + "\n";
+            myLocation += "Long: " + location.getLongitude();
+        }
+        else
+        {
+            myLocation = "Loading location...";
+        }
 
         _my_location_textView.setText(myLocation);
     }
 
-    private void printLastKnownLocation() {
-        try {
-            printLocation(_locationManager.getLastKnownLocation(PROVIDER));
-        } catch (SecurityException e) {
+    private Location getLastKnownLocation()
+    {
+        try
+        {
+            return _locationManager.getLastKnownLocation(PROVIDER);
+        }
+        catch (SecurityException e)
+        {
             printToast("Cant get the last known location");
         }
+
+        return null;
     }
 
 
     //================================================================
     //                      Distance
     //================================================================
-    private float locationDistance(Location myLocation)
+    private void printDistance(Location location)
+    {
+        float sinemaCityDistance = distanceFromSinemaCity(location);
+
+        String distance = "You Are " + sinemaCityDistance + " Meters From Cinema City";
+
+        _sinema_city_distance_textView.setText(distance);
+    }
+
+    private float distanceFromSinemaCity(Location myLocation)
     {
         Location sinemaCity = new Location("");
         sinemaCity.setLatitude(31.782780);
@@ -89,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     {
         printLocation(location);
 
+        printDistance(location);
     }
 
 
@@ -117,15 +145,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         _permissionManager.onRequestPermissionsResult(requestCode, permissions, grantResaults);
     }
 
-
-    @Override
-    protected void onStop()
-    {
-        super.onStop();
-
-
-
-    }
 
 
 
@@ -156,8 +175,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     public void onPermissionGranted()
     {
         updateLocation(PROVIDER, MIN_TIME, MIN_DISTANCE, this);
+
+        printLocation(getLastKnownLocation());
+
         printToast("Permission Granted");
-        printLastKnownLocation();
     }
 
 

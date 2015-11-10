@@ -13,12 +13,14 @@
         android:gravity="center"
         android:padding="30sp">
 
-        <TextView android:text="Getting Location....." android:layout_width="wrap_content"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/my_location_textView"
             android:layout_gravity="center"
             android:gravity="center"
-            android:textSize="25sp" />
+            android:textSize="25sp"
+            android:hint="My Location" />
     </LinearLayout>
 
     <LinearLayout
@@ -30,11 +32,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="_______________"
-            android:id="@+id/location_status_textView"
+            android:id="@+id/sinema_city_distance_textView"
             android:layout_gravity="center"
             android:gravity="center"
-            android:textSize="25sp" />
+            android:textSize="25sp"
+            android:hint="Distanse from cinema city" />
     </LinearLayout>
 
 </LinearLayout>
