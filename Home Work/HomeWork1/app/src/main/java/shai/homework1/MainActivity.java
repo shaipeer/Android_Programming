@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         _best_time_cmd.setOnClickListener(this);
 
         //Button boolean reset
-        _isKeyOnePressed = false;
+        resetPress();
 
         //Reset best time
         _bestTime = BEST_TIME_ZERO_VALUE;
@@ -98,22 +98,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         else if (v.getId() == _best_time_cmd.getId())   bestTimePressed();      //on best time button press
     }
 
-
+    //=======  Left Button  =======
     private void leftButtonPressed()
     {
         pressManager(_left_cmd.getText().toString());
     }
 
+    //=======  Right Button  =======
     private void rightButtonPressed()
     {
         pressManager(_right_cmd.getText().toString());
     }
 
+    //=======  Time Gap Button  =======
     private void timeGapPressed()
     {
 
     }
 
+    //=======  Best Time Button  =======
     private void bestTimePressed()
     {
         //Cancel key one press
@@ -127,8 +130,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Reset best time
         _bestTime = BEST_TIME_ZERO_VALUE;
 
-        //Set random value for the left and right buttons
-        setRandomKeys();
+        //Generate random value for the left and right buttons
+        generateRandomKeys();
 
         //Save state
         saveAll();
@@ -138,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //Generates the left and right buttons value randomly ( 1 or 2 )
-    private void setRandomKeys()
+    private void generateRandomKeys()
     {
         int minNumber = 1;
         int maxNumber = 2;
@@ -157,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
 
-        saveAll();      //save state
+        saveAll();                                          //save state
     }
 
     //Manages the presses on the left and right buttons
@@ -167,29 +170,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         {
             if(_isKeyOnePressed)
             {
-                resetPress();                       //Cancel Press
+                resetPress();                                                   //Cancel Press
             }
             else
             {
-                _isKeyOnePressed = true;            //Ok press on button one
-                takeStartTime();                    //Start taking time
+                keyOnePressed();                                                //Ok press on button one
+                takeStartTime();                                                //Start taking time
             }
         }
-        else if(_isKeyOnePressed)                   //If button 2 pressed after button 1 without interrupts
+        else if(_isKeyOnePressed)                                               //If button 2 pressed after button 1 without interrupts
         {
-            takeEndTime();                          //Take the second time
-            _time_gap_cmd.setText(getTimeGapStr()); 
+            takeEndTime();                                                      //Take the second time
+            _time_gap_cmd.setText(getTimeGapStr());                             //Label the time gap button with the new gap
 
             //Check if there is new best time
             if(isFaster())
             {
-                _bestTime = getTimeGapMili();
-                _best_time_cmd.setText(getTimeGapStr());
-                printToast(getResources().getString(R.string.new_best_time));   //new best time massage
+                _bestTime = getTimeGapMili();                                   //Get the new best time
+                _best_time_cmd.setText(getTimeGapStr());                        //Label the best time button with the new best time
+                printToast(getResources().getString(R.string.new_best_time));   //New best time massage
             }
 
-            //Set random value for the left and right buttons
-            setRandomKeys();
+            //Generate random value for the left and right buttons
+            generateRandomKeys();
 
             //Save state
             saveAll();
@@ -254,11 +257,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //================================================================
     //                      Reset Press
     //================================================================
-    private void resetPress()
-    {
-        _isKeyOnePressed = false;
-    }
-
+    private void resetPress()      {   _isKeyOnePressed = false;    }
+    private void keyOnePressed()   {   _isKeyOnePressed = true;     }
 
     //================================================================
     //                      Save All
