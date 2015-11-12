@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#dbff9f"
+    android:padding="20sp">
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center" >
+        android:layout_gravity="center"
+        android:layout_marginTop="-20sp">
 
         <Button
             android:layout_width="wrap_content"
@@ -16,7 +19,7 @@
             android:layout_margin="10sp"
             android:layout_weight="1"
             android:textSize="20sp"
-            android:padding="20sp"
+            android:padding="25sp"
             android:textAlignment="center"
             android:textStyle="normal" />
 
@@ -27,30 +30,70 @@
             android:layout_margin="10sp"
             android:layout_weight="1"
             android:textSize="20sp"
-            android:padding="20sp"
+            android:padding="25sp"
             android:textAlignment="center"
             android:textStyle="normal" />
     </LinearLayout>
 
-    <Button
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/time_gap_cmd"
-        android:layout_margin="10sp"
-        android:textSize="20sp"
-        android:padding="20sp"
-        android:textAlignment="center"
-        android:layout_gravity="center"
-        android:textStyle="normal" />
+        android:background="#a09dff"
+        android:layout_marginBottom="10sp">
 
-    <Button
-        android:layout_width="wrap_content"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/time_gap_text"
+            android:id="@+id/time_gap_textView"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="25sp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/time_gap_cmd"
+            android:layout_margin="10sp"
+            android:textSize="20sp"
+            android:padding="20sp"
+            android:textAlignment="center"
+            android:layout_gravity="center"
+            android:textStyle="normal"
+            android:background="#c3c8ff"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/best_time_cmd"
-        android:layout_margin="10sp"
-        android:textSize="20sp"
-        android:padding="20sp"
-        android:textAlignment="center"
-        android:layout_gravity="center"
-        android:textStyle="normal" />
+        android:background="#a09dff">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/best_time_text"
+            android:id="@+id/best_time_textView"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="25sp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/best_time_cmd"
+            android:layout_margin="10sp"
+            android:textSize="20sp"
+            android:padding="20sp"
+            android:textAlignment="center"
+            android:layout_gravity="center"
+            android:textStyle="normal"
+            android:background="#c3c8ff"
+            android:layout_weight="1" />
+    </LinearLayout>
+
 </LinearLayout>

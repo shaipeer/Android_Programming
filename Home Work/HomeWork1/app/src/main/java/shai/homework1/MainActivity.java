@@ -4,6 +4,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,28 +15,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //App time format
     private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("mm:ss:SS");
 
-    //Shared Preferences constants
+    //Shared Preferences constants and keys
     private final String PREFS_NAME          = "app_memory";
     private final String LEFT_PREFS_KEY      = "left_time";
     private final String RIGHT_PREFS_KEY     = "right_time";
     private final String TIME_GAP_PREFS_KEY  = "time_gap";
     private final String BEST_TIME_PREFS_KEY = "best_time";
+    private final String BEST_TIME_PREFS_VAL = "best_time_val";
 
-    //buttons
+    //Upper buttons value
+    private final String FIRST_BUTTON_VALUE  = "1";
+    private final String SECOND_BUTTON_VALUE = "2";
+
+    //Best time zero value
+    private final int BEST_TIME_ZERO_VALUE = 0;
+
+    //Buttons
     private Button  _left_cmd;
     private Button  _right_cmd;
     private Button  _time_gap_cmd;
     private Button  _best_time_cmd;
 
-    //is left or right keys ware pressed
-    private Boolean isKeyOnePressed;
+    //Is the key contains 1 pressed
+    private Boolean _isKeyOnePressed;
 
-    //take the time for the first and second press
-    private long startTime, endTime;
+    //Best time value
+    long _bestTime;
+
+    //Take the time for the first and second press
+    private long _startTime, _endTime;
 
     //Shared Preferences vars
-    private SharedPreferences prefs;
-    private SharedPreferences.Editor editor;
+    private SharedPreferences _prefs;
+    private SharedPreferences.Editor _editor;
 
 
     //================================================================
@@ -46,26 +59,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //init shared preferences
-        prefs  = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        editor = prefs.edit();
+        //Init shared preferences
+        _prefs  = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        _editor = _prefs.edit();
 
-        //set screen objects
+        //Set screen objects
         _left_cmd       = (Button)findViewById(R.id.left_cmd);
         _right_cmd      = (Button)findViewById(R.id.right_cmd);
         _time_gap_cmd   = (Button)findViewById(R.id.time_gap_cmd);
         _best_time_cmd  = (Button)findViewById(R.id.best_time_cmd);
 
-        //set listeners
+        //Set listeners
         _left_cmd.setOnClickListener(this);
         _right_cmd.setOnClickListener(this);
         _time_gap_cmd.setOnClickListener(this);
         _best_time_cmd.setOnClickListener(this);
 
-        //button boolean reset
-        isKeyOnePressed = false;
+        //Button boolean reset
+        _isKeyOnePressed = false;
 
-        //load last operation values
+        //Reset best time
+        _bestTime = BEST_TIME_ZERO_VALUE;
+
+        //Load last operation values
         loadAll();
     }
 
@@ -85,46 +101,59 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void leftButtonPressed()
     {
-        timerManager(_left_cmd.getText().toString());
+        pressManager(_left_cmd.getText().toString());
     }
 
     private void rightButtonPressed()
     {
-        timerManager(_right_cmd.getText().toString());
+        pressManager(_right_cmd.getText().toString());
     }
 
     private void timeGapPressed()
     {
-        
+
     }
 
     private void bestTimePressed()
     {
-        if(isKeyOnePressed)
+        //Cancel key one press
+        if(_isKeyOnePressed)
             resetPress();
 
-        setRandomKeys();
-
+        //Reset fields
         _best_time_cmd.setText(getResources().getString(R.string.zero_time));
         _time_gap_cmd.setText(getResources().getString(R.string.zero_time));
 
+        //Reset best time
+        _bestTime = BEST_TIME_ZERO_VALUE;
+
+        //Set random value for the left and right buttons
+        setRandomKeys();
+
+        //Save state
         saveAll();
+
+        //Reset values massage
+        printToast(getResources().getString(R.string.reset_values));
     }
 
     //Generates the left and right buttons value randomly ( 1 or 2 )
     private void setRandomKeys()
     {
-        int rand = (int)( Math.random() * 2 + 1);   //generates 1 or 2
+        int minNumber = 1;
+        int maxNumber = 2;
 
-        switch(rand)
+        int leftKeyValue = (int)( Math.random() * maxNumber + minNumber);   //generates 1 or 2
+
+        switch(leftKeyValue)
         {
             case 1:
-                _left_cmd.setText("1");             //left button
-                _right_cmd.setText("2");            //right button
+                _left_cmd.setText(FIRST_BUTTON_VALUE);      //left button
+                _right_cmd.setText(SECOND_BUTTON_VALUE);    //right button
                 break;
             case 2:
-                _left_cmd.setText("2");             //left button
-                _right_cmd.setText("1");            //right button
+                _left_cmd.setText(SECOND_BUTTON_VALUE);     //left button
+                _right_cmd.setText(FIRST_BUTTON_VALUE);     //right button
                 break;
         }
 
@@ -132,28 +161,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //Manages the presses on the left and right buttons
-    private void timerManager(String buttonText)
+    private void pressManager(String buttonText)
     {
-        if(buttonText.equals("1"))  //
+        if(buttonText.equals(FIRST_BUTTON_VALUE))  //If the first button pressed
         {
-            if(isKeyOnePressed)
+            if(_isKeyOnePressed)
             {
-                isKeyOnePressed = false;
+                resetPress();                       //Cancel Press
             }
             else
             {
-                isKeyOnePressed = true;
-                takeStartTime();
+                _isKeyOnePressed = true;            //Ok press on button one
+                takeStartTime();                    //Start taking time
             }
         }
-        else if(isKeyOnePressed)    //if button 2 pressed after button 1 without interrupts
+        else if(_isKeyOnePressed)                   //If button 2 pressed after button 1 without interrupts
         {
-            takeEndTime();
-            _time_gap_cmd.setText(getTimeGap());
+            takeEndTime();                          //Take the second time
+            _time_gap_cmd.setText(getTimeGapStr()); 
+
+            //Check if there is new best time
             if(isFaster())
-                _best_time_cmd.setText(getTimeGap());
+            {
+                _bestTime = getTimeGapMili();
+                _best_time_cmd.setText(getTimeGapStr());
+                printToast(getResources().getString(R.string.new_best_time));   //new best time massage
+            }
+
+            //Set random value for the left and right buttons
+            setRandomKeys();
+
+            //Save state
             saveAll();
 
+            //Reset the press
             resetPress();
         }
     }
@@ -165,63 +206,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //Take the start time
     private void takeStartTime()
     {
-        startTime = System.currentTimeMillis();
+        _startTime = System.currentTimeMillis();
     }
 
     //Take the end time
     private void takeEndTime()
     {
-        endTime = System.currentTimeMillis();
+        _endTime = System.currentTimeMillis();
     }
 
     //Return String with the time gap between start and end time
-    private String getTimeGap()
+    private String getTimeGapStr()
     {
-        long milliseconds = endTime - startTime;
-        Date date = new Date(milliseconds);
+        Date date = new Date(getTimeGapMili());
 
         return DATE_FORMAT.format(date);
     }
 
+    private Long getTimeGapMili()
+    {
+        Long gap =_endTime - _startTime;
+        return gap;
+    }
+
     //Check if the new time is faster then best time
+    //Return true if the time gap is faster than the best time
     private Boolean isFaster()
     {
-        String zeroString    = getResources().getString(R.string.zero_time);
-        String bestTimeValue = _best_time_cmd.getText().toString();
-        String timeGapValue  = _time_gap_cmd.getText().toString();
+        String timeGapStr;
+        Date timeGap;
 
-        String timeGapStr, bestTimeStr;
-        Date timeGap, bestTime;
+        if      (_bestTime == 0)                {   return true;    }   //Check if its the first measure
+        else if (getTimeGapMili() < _bestTime)  {   return true;    }   //Compare the time
+        else                                    {   return false;   }   //Not faster
 
-        if(bestTimeValue.equals(zeroString) && !timeGapValue.equals(zeroString))
-        {
-            return true;
-        }
-        else
-        {
-            try
-            {
-                //convert time gap value to Date object
-                timeGapStr  = _time_gap_cmd.getText().toString();
-                timeGap     = DATE_FORMAT.parse(timeGapStr);
+    }
 
-                //convert best time value to Date object
-                bestTimeStr = _best_time_cmd.getText().toString();
-                bestTime    = DATE_FORMAT.parse(bestTimeStr);
-
-                //compare the dates
-                if (timeGap.compareTo(bestTime) < 0)
-                {
-                    return true;
-                }
-            }
-            catch (ParseException e)
-            {
-                return false;
-            }
-        }
-
-        return false;
+    //================================================================
+    //                      Toast
+    //================================================================
+    private void printToast(String str)
+    {
+        Toast.makeText(MainActivity.this, str, Toast.LENGTH_SHORT).show();
     }
 
 
@@ -230,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //================================================================
     private void resetPress()
     {
-        isKeyOnePressed = false;
+        _isKeyOnePressed = false;
     }
 
 
@@ -240,12 +266,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void saveAll()
     {
         //write to shared preferences
-        editor.putString(LEFT_PREFS_KEY,      _left_cmd.getText().toString()      );    //save left key
-        editor.putString(RIGHT_PREFS_KEY,     _right_cmd.getText().toString()     );    //save right key
-        editor.putString(TIME_GAP_PREFS_KEY,  _time_gap_cmd.getText().toString()  );    //save time gap key
-        editor.putString(BEST_TIME_PREFS_KEY, _best_time_cmd.getText().toString() );    //save best time key
+        _editor.putString(LEFT_PREFS_KEY,      _left_cmd.getText().toString()      );    //save left key
+        _editor.putString(RIGHT_PREFS_KEY,     _right_cmd.getText().toString()     );    //save right key
+        _editor.putString(TIME_GAP_PREFS_KEY,  _time_gap_cmd.getText().toString()  );    //save time gap key
+        _editor.putString(BEST_TIME_PREFS_KEY, _best_time_cmd.getText().toString() );    //save best time key
+        _editor.putString(BEST_TIME_PREFS_VAL, String.valueOf(_bestTime)           );    //save best time value
 
-        editor.apply();
+        _editor.apply();
     }
 
     //================================================================
@@ -253,9 +280,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //================================================================
     private void loadAll()
     {
-        _left_cmd.setText(prefs.getString(LEFT_PREFS_KEY,           getResources().getString(R.string.left_button)  ));     //load left key
-        _right_cmd.setText(prefs.getString(RIGHT_PREFS_KEY,         getResources().getString(R.string.right_button) ));     //load right key
-        _time_gap_cmd.setText(prefs.getString(TIME_GAP_PREFS_KEY,   getResources().getString(R.string.zero_time)    ));     //load time gap key
-        _best_time_cmd.setText(prefs.getString(BEST_TIME_PREFS_KEY, getResources().getString(R.string.zero_time)    ));     //load best time key
+        _left_cmd.setText(_prefs.getString(LEFT_PREFS_KEY,           getResources().getString(R.string.left_button)  ));        //load left key
+        _right_cmd.setText(_prefs.getString(RIGHT_PREFS_KEY,         getResources().getString(R.string.right_button) ));        //load right key
+        _time_gap_cmd.setText(_prefs.getString(TIME_GAP_PREFS_KEY,   getResources().getString(R.string.zero_time)    ));        //load time gap key
+        _best_time_cmd.setText(_prefs.getString(BEST_TIME_PREFS_KEY, getResources().getString(R.string.zero_time)    ));        //load best time key
+        _bestTime = Long.valueOf(_prefs.getString(BEST_TIME_PREFS_VAL, BEST_TIME_ZERO_VALUE + "")).longValue();                 //load best time value
     }
 }
