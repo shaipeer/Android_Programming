@@ -37,6 +37,22 @@
             android:gravity="center"
             android:textSize="25sp"
             android:hint="Distanse from cinema city" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="40sp"
+        android:gravity="center">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Show Map"
+            android:id="@+id/show_map_cmd" />
     </LinearLayout>
 
 </LinearLayout>

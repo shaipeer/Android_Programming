@@ -1,16 +1,19 @@
 package shai.classwork3;
 
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
-public class MainActivity extends AppCompatActivity implements LocationListener {
+public class MainActivity extends AppCompatActivity implements LocationListener, View.OnClickListener {
 
     //Location Manager Constants
     private final String PROVIDER = LocationManager.GPS_PROVIDER;
@@ -25,6 +28,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private TextView _my_location_textView;
     private TextView _sinema_city_distance_textView;
 
+    //Show map button
+    private Button _show_map_cmd;
 
     //================================================================
     //                      On Create
@@ -43,6 +48,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         //Set Permission Manager (for android Marshmallow)
         _permissionManager = getPermissionManager();
+
+        //Set show map listener
+        _show_map_cmd = (Button) findViewById(R.id.show_map_cmd);
+        _show_map_cmd.setOnClickListener(this);
     }
 
 
@@ -220,4 +229,25 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
 
+
+    //================================================================
+    //                      Show Map
+    //================================================================
+
+    @Override
+    public void onClick(View v)
+    {
+        if (v.getId() == _show_map_cmd.getId())
+            showMapButtonPressed();
+    }
+
+
+    private void showMapButtonPressed()
+    {
+        //create an intent to connect this Context with new Activity
+        Intent intent = new Intent(this, MapsActivity.class);
+
+        //start new activity
+        startActivity(intent);
+    }
 }
