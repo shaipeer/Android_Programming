@@ -10,16 +10,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener
-{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     //App time format
     private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("mm:ss:SS");
 
     //Shared Preferences constants and keys
-    private final String PREFS_NAME          = "app_memory";
-    private final String LEFT_PREFS_KEY      = "left_time";
-    private final String RIGHT_PREFS_KEY     = "right_time";
-    private final String TIME_GAP_PREFS_KEY  = "time_gap";
+    private final String PREFS_NAME = "app_memory";
+    private final String LEFT_PREFS_KEY = "left_time";
+    private final String RIGHT_PREFS_KEY = "right_time";
+    private final String TIME_GAP_PREFS_KEY = "time_gap";
     private final String BEST_TIME_PREFS_KEY = "best_time";
     private final String BEST_TIME_PREFS_VAL = "best_time_val";
 
@@ -31,10 +30,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private final int BEST_TIME_ZERO_VALUE = 0;
 
     //Buttons
-    private Button  _left_cmd;
-    private Button  _right_cmd;
-    private Button  _time_gap_cmd;
-    private Button  _best_time_cmd;
+    private Button _left_cmd;
+    private Button _right_cmd;
+    private Button _time_gap_cmd;
+    private Button _best_time_cmd;
 
     //Is the key contains 1 pressed
     private Boolean _isKeyOnePressed;
@@ -59,30 +58,51 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Init shared preferences
-        _prefs  = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        initialSharedPreferences();
+
+        setViews();
+        setListeners();
+
+        resetPress();
+        resetBestTime();
+
+        loadAll();
+
+        generateRandomKeys();
+        saveAll();
+    }
+
+
+    //=======  Init shared preferences =======
+    private void initialSharedPreferences()
+    {
+        _prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         _editor = _prefs.edit();
+    }
 
-        //Set screen objects
-        _left_cmd       = (Button)findViewById(R.id.left_cmd);
-        _right_cmd      = (Button)findViewById(R.id.right_cmd);
-        _time_gap_cmd   = (Button)findViewById(R.id.time_gap_cmd);
-        _best_time_cmd  = (Button)findViewById(R.id.best_time_cmd);
 
-        //Set listeners
+    //=======  Set screen objects =======
+    private void setViews()
+    {
+        _left_cmd = (Button) findViewById(R.id.left_cmd);
+        _right_cmd = (Button) findViewById(R.id.right_cmd);
+        _time_gap_cmd = (Button) findViewById(R.id.time_gap_cmd);
+        _best_time_cmd = (Button) findViewById(R.id.best_time_cmd);
+    }
+
+    //Set listeners
+    private void setListeners()
+    {
         _left_cmd.setOnClickListener(this);
         _right_cmd.setOnClickListener(this);
         _time_gap_cmd.setOnClickListener(this);
         _best_time_cmd.setOnClickListener(this);
+    }
 
-        //Button boolean reset
-        resetPress();
-
-        //Reset best time
+    //Reset best time
+    private void resetBestTime()
+    {
         _bestTime = BEST_TIME_ZERO_VALUE;
-
-        //Load last operation values
-        loadAll();
     }
 
 
@@ -166,29 +186,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //Manages the presses on the left and right buttons
     private void pressManager(String buttonText)
     {
-        if(buttonText.equals(FIRST_BUTTON_VALUE))  //If the first button pressed
+        if(buttonText.equals(FIRST_BUTTON_VALUE))           //If the first button pressed
         {
-            if(_isKeyOnePressed)
+            if(!_isKeyOnePressed)
             {
-                resetPress();                                                   //Cancel Press
-            }
-            else
-            {
-                keyOnePressed();                                                //Ok press on button one
-                takeStartTime();                                                //Start taking time
+                keyOnePressed();                            //Ok press on button one
+                takeStartTime();                            //Start taking time
             }
         }
-        else if(_isKeyOnePressed)                                               //If button 2 pressed after button 1 without interrupts
+        else if(_isKeyOnePressed)                           //If button 2 pressed after button 1 without interrupts
         {
-            takeEndTime();                                                      //Take the second time
-            _time_gap_cmd.setText(getTimeGapStr());                             //Label the time gap button with the new gap
+            takeEndTime();                                  //Take the second time
+            _time_gap_cmd.setText(getTimeGapStr());         //Label the time gap button with the new gap
 
             //Check if there is new best time
             if(isFaster())
             {
-                _bestTime = getTimeGapMili();                                   //Get the new best time
-                _best_time_cmd.setText(getTimeGapStr());                        //Label the best time button with the new best time
-                printToast(getResources().getString(R.string.new_best_time));   //New best time massage
+                _bestTime = getTimeGapMili();               //Get the new best time
+                _best_time_cmd.setText(getTimeGapStr());    //Label the best time button with the new best time
+                printToast(getResources().getString(R.string.new_best_time));  //New best time massage
             }
 
             //Generate random value for the left and right buttons
@@ -280,10 +296,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //================================================================
     private void loadAll()
     {
-        _left_cmd.setText(_prefs.getString(LEFT_PREFS_KEY,           getResources().getString(R.string.left_button)  ));        //load left key
-        _right_cmd.setText(_prefs.getString(RIGHT_PREFS_KEY,         getResources().getString(R.string.right_button) ));        //load right key
-        _time_gap_cmd.setText(_prefs.getString(TIME_GAP_PREFS_KEY,   getResources().getString(R.string.zero_time)    ));        //load time gap key
-        _best_time_cmd.setText(_prefs.getString(BEST_TIME_PREFS_KEY, getResources().getString(R.string.zero_time)    ));        //load best time key
-        _bestTime = Long.valueOf(_prefs.getString(BEST_TIME_PREFS_VAL, BEST_TIME_ZERO_VALUE + "")).longValue();                 //load best time value
+        _left_cmd.setText(_prefs.getString(LEFT_PREFS_KEY, getResources().getString(R.string.left_button)));            //load left key
+        _right_cmd.setText(_prefs.getString(RIGHT_PREFS_KEY, getResources().getString(R.string.right_button)));         //load right key
+        _time_gap_cmd.setText(_prefs.getString(TIME_GAP_PREFS_KEY, getResources().getString(R.string.zero_time)));      //load time gap key
+        _best_time_cmd.setText(_prefs.getString(BEST_TIME_PREFS_KEY, getResources().getString(R.string.zero_time)));    //load best time key
+        _bestTime = Long.valueOf(_prefs.getString(BEST_TIME_PREFS_VAL, BEST_TIME_ZERO_VALUE + "")).longValue();         //load best time value
     }
+
+
 }
